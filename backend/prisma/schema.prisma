@@ -153,6 +153,8 @@ model User {
   phone        String?
   avatarUrl    String?
   accountType  AccountType @default(OWNER)
+  passwordResetTokenHash String?   @unique
+  passwordResetExpires   DateTime?
   createdAt    DateTime    @default(now())
 
   orgMemberships      OrganizationMember[]

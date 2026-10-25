@@ -42,6 +42,7 @@ git push -u origin main
   - `JWT_EXPIRES_IN` → `7d`
   - `CORS_ORIGIN` → اتركه مؤقتًا `http://localhost:5173` (سنعدله في الخطوة 5)
   - `UPLOAD_DIR` → `uploads`
+  - `WHATSAPP_TOKEN` و `WHATSAPP_PHONE_NUMBER_ID` → اختياريان، لتفعيل إرسال واتساب فعلي عبر Meta Cloud API (راجع القسم أدناه)
 - من تبويب **Settings → Networking**، اضغط **Generate Domain** لإعطاء الخدمة رابطًا عامًا. احفظ هذا الرابط (مثال: `qisma-backend-production.up.railway.app`).
 
 ### 4) تحقق من صحة الـ Backend
@@ -97,6 +98,8 @@ railway domain
 
 ## ملاحظات مهمة
 
+- **إشعارات واتساب**: لتفعيل الإرسال التلقائي، أنشئ حساب Meta for Developers مجانًا → WhatsApp Business Platform → احصل على Access Token ومعرّف رقم الهاتف (Phone Number ID)، وضعهما في متغيرات `WHATSAPP_TOKEN` و`WHATSAPP_PHONE_NUMBER_ID` بخدمة الـ backend. بدون هذا الإعداد، التطبيق يعمل بشكل طبيعي والإشعارات تبقى داخل التطبيق فقط.
+- **مكتبات إضافية (OCR وقراءة PDF)**: أضفنا `tesseract.js` و`pdf-parse` و`pdfkit`، وهي مجانية بالكامل ولا تحتاج مفاتيح API، لكنها تزيد استهلاك الذاكرة والمعالجة قليلاً أثناء البناء الأول ووقت تشغيل ميزات المسح الضوئي — كافية لخطة Railway المجانية/الأساسية في الاستخدام العادي.
 - **الملفات المرفوعة (uploads)**: نظام الملفات على Railway غير دائم افتراضيًا بين عمليات إعادة النشر. لحفظ الإثباتات/المستندات المرفوعة، أضف **Volume** لخدمة qisma-backend من **Settings → Volumes** واربطه بالمسار `/app/uploads`. بديل أفضل للإنتاج الحقيقي: استبدال `backend/src/utils/upload.ts` بتخزين على S3 أو ما يعادله.
 - **PORT**: Railway يضبط متغير `PORT` تلقائيًا لكل خدمة — لا تضبطه يدويًا، الكود يقرأه تلقائيًا (`process.env.PORT`).
 - **تحديثات لاحقة**: أي `git push` على الفرع الرئيسي (مع طريقة GitHub) يعيد نشر الخدمتين تلقائيًا.

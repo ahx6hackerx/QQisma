@@ -2,8 +2,6 @@ import { NextFunction, Request, Response } from "express";
 import { AnyZodObject, ZodError } from "zod";
 import { AppError } from "../lib/errors";
 
-// Validates req.body against a zod schema and replaces it with the parsed
-// (typed, defaulted) value. Keeps controllers free of manual checks.
 export function validateBody(schema: AnyZodObject) {
   return (req: Request, _res: Response, next: NextFunction) => {
     try {

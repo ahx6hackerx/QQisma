@@ -23,6 +23,7 @@ function NavItem({
   item: ShellNavItem;
   collapsed?: boolean;
   onNavigate?: () => void;
+  [key: string]: unknown;
 }) {
   return (
     <NavLink
@@ -119,7 +120,12 @@ function SidebarContent({
 
       <nav className="flex flex-1 flex-col gap-1">
         {navItems.map((item) => (
-          <NavItem key={item.to} item={item} collapsed={collapsed} onNavigate={onNavigate} />
+          <NavItem
+            key={item.to}
+            item={item}
+            collapsed={collapsed}
+            onNavigate={onNavigate}
+          />
         ))}
         <NavItem
           item={{

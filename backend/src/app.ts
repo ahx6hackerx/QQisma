@@ -1,7 +1,9 @@
 import express from "express";
+import helmet from "helmet";
 import cors from "cors";
 import path from "path";
 import { env } from "./config/env";
+import { generalLimiter } from "./middleware/rateLimit";
 import { errorHandler } from "./middleware/errorHandler";
 
 import { authRouter } from "./modules/auth/auth.routes";
@@ -33,9 +35,32 @@ import { brokerDashboardRouter } from "./modules/broker/dashboard.routes";
 
 export const app = express();
 
-app.use(cors({ origin: env.corsOrigin, credentials: true }));
-app.use(express.json());
-app.use("/uploads", express.static(path.resolve(process.cwd(), env.uploadDir)));
+// Security headers (sets X-Content-Type-Options, X-Frame-Options, HSTS, removes X-Powered-By etc.)
+app.use(helmet({ crossOriginResourcePolicy: { policy: "cross-origin" } }));
+
+// Tight CORS — only the configured frontend origin, never a wildcard.
+const allowedOrigins = env.corsOrigin.split(",").map((o) => o.trim()).filter(Boolean);
+app.use(cors({
+  origin: (origin, cb) => {
+    if (!origin || allowedOrigins.includes(origin)) return cb(null, true);
+    cb(new Error("Not allowed by CORS"));
+  },
+  credentials: true,
+}));
+
+// API-wide rate limiter backstop.
+app.use("/api", generalLimiter);
+
+// Limit JSON body size to prevent payload-bloat attacks.
+app.use(express.json({ limit: "2mb" }));
+// Serve uploaded files — never as HTML/SVG/executable (belt-and-suspenders
+// against stored-XSS if a bad file slipped through the upload filter).
+app.use("/uploads", express.static(path.resolve(process.cwd(), env.uploadDir), {
+  setHeaders: (res, filePath) => {
+    if (/\.(html?|svg)$/i.test(filePath)) res.setHeader("Content-Type", "text/plain");
+    res.setHeader("X-Content-Type-Options", "nosniff");
+  },
+}));
 
 app.get("/api/health", (_req, res) => res.json({ ok: true, service: "qisma-api" }));
 

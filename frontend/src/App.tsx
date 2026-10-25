@@ -1,9 +1,12 @@
+import React from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import { useAuth } from "./context/AuthContext";
 import { PageSpinner } from "./components/ui/Spinner";
 
 import LoginPage from "./pages/auth/LoginPage";
 import RegisterPage from "./pages/auth/RegisterPage";
+import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage";
+import ResetPasswordPage from "./pages/auth/ResetPasswordPage";
 import PublicConfirmPage from "./pages/PublicConfirmPage";
 import TenantPortalPage from "./pages/TenantPortalPage";
 
@@ -32,7 +35,7 @@ import BrokerDashboardPage from "./pages/broker/BrokerDashboardPage";
 import ListingsPage from "./pages/broker/ListingsPage";
 import LeadsPage from "./pages/broker/LeadsPage";
 
-function ProtectedRoute({ children, requireAccountType }: { children: JSX.Element; requireAccountType?: "OWNER" | "BROKER" }) {
+function ProtectedRoute({ children, requireAccountType }: { children: React.ReactElement; requireAccountType?: "OWNER" | "BROKER" }) {
   const { user, loading } = useAuth();
   if (loading) return <PageSpinner />;
   if (!user) return <Navigate to="/login" replace />;
@@ -49,6 +52,8 @@ export default function App() {
     <Routes>
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
+      <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+      <Route path="/reset-password" element={<ResetPasswordPage />} />
       <Route path="/confirm/:id" element={<PublicConfirmPage />} />
       <Route path="/tenant/:token" element={<TenantPortalPage />} />
 
