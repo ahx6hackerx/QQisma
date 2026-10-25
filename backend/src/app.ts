@@ -35,6 +35,9 @@ import { brokerDashboardRouter } from "./modules/broker/dashboard.routes";
 
 export const app = express();
 
+// Railway terminates TLS at a proxy; trust it so rate limiting sees real client IPs.
+app.set("trust proxy", 1);
+
 // Security headers (sets X-Content-Type-Options, X-Frame-Options, HSTS, removes X-Powered-By etc.)
 app.use(helmet({ crossOriginResourcePolicy: { policy: "cross-origin" } }));
 
