@@ -1,6 +1,6 @@
 import { ReactNode, useEffect, useState } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
-import { Bell, LogOut, Sun, Moon, Languages, Menu, X, PanelLeftClose, PanelLeftOpen, Wallet, UserCircle } from "lucide-react";
+import { Bell, LogOut, Sun, Moon, Languages, Menu, X, PanelLeftClose, PanelLeftOpen, Wallet, UserCircle, ShieldAlert } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { useTheme } from "../../context/ThemeContext";
 import { useLanguage } from "../../context/LanguageContext";
@@ -191,6 +191,8 @@ export default function Shell({
   notificationsPath?: string;
 }) {
   const { t } = useLanguage();
+  const { user: currentUser } = useAuth();
+  const restricted = currentUser && !currentUser.isAdmin ? currentUser.restrictedFeatures ?? [] : [];
   const [unreadCount, setUnreadCount] = useState(0);
   const [collapsed, setCollapsed] = useState(() => localStorage.getItem("qisma_sidebar_collapsed") === "true");
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -274,6 +276,20 @@ export default function Shell({
 
       <main className="flex-1 overflow-x-hidden pt-14 md:pt-0">
         <div className="mx-auto max-w-6xl px-4 py-6 md:px-6 md:py-8">
+          {restricted.length > 0 && (
+            <div className="mb-6 rounded-lg border border-brass-300 bg-brass-50 p-4 text-sm text-brass-700">
+              <p className="mb-1 flex items-center gap-2 font-semibold">
+                <ShieldAlert className="h-4 w-4" /> بعض الميزات غير متاحة لحسابك حاليًا
+              </p>
+              <ul className="space-y-0.5">
+                {restricted.map((r) => (
+                  <li key={r.feature}>
+                    • <strong>{r.label}</strong> — {r.reason}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
           <Outlet />
         </div>
       </main>

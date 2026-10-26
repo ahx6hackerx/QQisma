@@ -105,6 +105,13 @@ enum AccountType {
   BROKER
 }
 
+// Account lifecycle, controlled by the platform admin.
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+  REMOVED
+}
+
 enum ListingType {
   SALE
   RENT
@@ -156,6 +163,17 @@ model User {
   passwordResetTokenHash String?   @unique
   passwordResetExpires   DateTime?
   createdAt    DateTime    @default(now())
+
+  // Admin controls & login security
+  status          UserStatus @default(ACTIVE)
+  statusReason    String?
+  statusChangedAt DateTime?
+  tokenVersion    Int        @default(0)
+  failedLogins    Int        @default(0)
+  lockedUntil     DateTime?
+  lastLoginAt     DateTime?
+  lastLoginIp     String?
+  featureRestrictions UserFeatureRestriction[]
 
   orgMemberships      OrganizationMember[]
   propertyMemberships PropertyMember[]
@@ -688,3 +706,62 @@ model MaintenanceRequest {
   @@map("maintenance_requests")
 }
 
+
+// ---------------------------------------------------------------------------
+// Platform administration
+// ---------------------------------------------------------------------------
+
+// A feature the admin has switched off for one specific user, with the
+// reason shown to that user when they try to use it.
+model UserFeatureRestriction {
+  id          String   @id @default(cuid())
+  userId      String
+  feature     String
+  reason      String
+  createdById String
+  createdAt   DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, feature])
+  @@map("user_feature_restrictions")
+}
+
+// Platform-wide switches (maintenance mode, closed registration, globally
+// disabled features). Value is a JSON string.
+model PlatformSetting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+
+  @@map("platform_settings")
+}
+
+// Broadcast sent by the admin to every user's notification inbox.
+model Announcement {
+  id             String   @id @default(cuid())
+  title          String
+  message        String
+  audience       String   @default("ALL")
+  recipientCount Int      @default(0)
+  createdById    String
+  createdAt      DateTime @default(now())
+
+  @@map("announcements")
+}
+
+// Every admin action, kept even if the target account is later removed.
+model AdminAuditLog {
+  id          String   @id @default(cuid())
+  adminId     String
+  adminEmail  String
+  action      String
+  targetId    String?
+  targetLabel String?
+  details     String?
+  ip          String?
+  createdAt   DateTime @default(now())
+
+  @@index([createdAt])
+  @@map("admin_audit_logs")
+}

@@ -31,6 +31,9 @@ export interface User {
   phone?: string | null;
   avatarUrl?: string | null;
   accountType: AccountType;
+  isAdmin?: boolean;
+  // Features the platform admin switched off for this account (with the reason).
+  restrictedFeatures?: { feature: string; label: string; reason: string }[];
 }
 
 export interface Organization {

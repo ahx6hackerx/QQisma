@@ -32,6 +32,7 @@ import { maintenanceRouter } from "./modules/maintenance/requests.routes";
 import { listingsRouter } from "./modules/broker/listings.routes";
 import { leadsRouter } from "./modules/broker/leads.routes";
 import { brokerDashboardRouter } from "./modules/broker/dashboard.routes";
+import { adminRouter } from "./modules/admin/admin.routes";
 
 export const app = express();
 
@@ -103,6 +104,9 @@ app.use("/api/dashboard", dashboardRouter);
 app.use("/api/broker/listings", listingsRouter);
 app.use("/api/broker/leads", leadsRouter);
 app.use("/api/broker/dashboard", brokerDashboardRouter);
+
+// Platform administration (restricted to ADMIN_EMAILS)
+app.use("/api/admin", adminRouter);
 
 app.use((req, res) => {
   res.status(404).json({ error: { message: "المسار غير موجود.", code: "NOT_FOUND" } });

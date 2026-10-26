@@ -14,3 +14,11 @@ export const authLimiter = rateLimit({
   legacyHeaders: false,
   message: { error: { message: "محاولات كثيرة جدًا. الرجاء الانتظار قليلاً قبل إعادة المحاولة.", code: "RATE_LIMITED" } },
 });
+
+// Stricter limiter for the admin API.
+export const adminLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 200,
+  standardHeaders: true,
+  legacyHeaders: false,
+});

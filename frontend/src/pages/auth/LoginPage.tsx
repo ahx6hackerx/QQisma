@@ -20,7 +20,7 @@ export default function LoginPage() {
     setLoading(true);
     try {
       const loggedInUser = await login(email, password);
-      navigate(loggedInUser.accountType === "BROKER" ? "/broker" : "/app");
+      navigate(loggedInUser.isAdmin ? "/admin" : loggedInUser.accountType === "BROKER" ? "/broker" : "/app");
     } catch (err) {
       setError((err as Error).message);
     } finally {

@@ -35,10 +35,31 @@ import BrokerDashboardPage from "./pages/broker/BrokerDashboardPage";
 import ListingsPage from "./pages/broker/ListingsPage";
 import LeadsPage from "./pages/broker/LeadsPage";
 
-function ProtectedRoute({ children, requireAccountType }: { children: React.ReactElement; requireAccountType?: "OWNER" | "BROKER" }) {
+import AdminLayout from "./components/layout/AdminLayout";
+import AdminDashboardPage from "./pages/admin/AdminDashboardPage";
+import AdminUsersPage from "./pages/admin/AdminUsersPage";
+import AdminUserDetailPage from "./pages/admin/AdminUserDetailPage";
+import AdminAnnouncementsPage from "./pages/admin/AdminAnnouncementsPage";
+import AdminSecurityPage from "./pages/admin/AdminSecurityPage";
+import AdminAuditPage from "./pages/admin/AdminAuditPage";
+
+function ProtectedRoute({
+  children,
+  requireAccountType,
+  requireAdmin,
+}: {
+  children: React.ReactElement;
+  requireAccountType?: "OWNER" | "BROKER";
+  requireAdmin?: boolean;
+}) {
   const { user, loading } = useAuth();
   if (loading) return <PageSpinner />;
   if (!user) return <Navigate to="/login" replace />;
+  // Admin area: non-admins are sent to their own home (the server also
+  // enforces this — this is just so they don't see an empty page).
+  if (requireAdmin && !user.isAdmin) {
+    return <Navigate to={user.accountType === "BROKER" ? "/broker" : "/app"} replace />;
+  }
   // Each account type has its own home area; visiting the other one
   // redirects to your own instead of a confusing empty/forbidden page.
   if (requireAccountType && user.accountType !== requireAccountType) {
@@ -100,6 +121,23 @@ export default function App() {
         <Route path="profile" element={<ProfilePage />} />
       </Route>
 
+      <Route
+        path="/admin"
+        element={
+          <ProtectedRoute requireAdmin>
+            <AdminLayout />
+          </ProtectedRoute>
+        }
+      >
+        <Route index element={<AdminDashboardPage />} />
+        <Route path="users" element={<AdminUsersPage />} />
+        <Route path="users/:id" element={<AdminUserDetailPage />} />
+        <Route path="announcements" element={<AdminAnnouncementsPage />} />
+        <Route path="security" element={<AdminSecurityPage />} />
+        <Route path="audit" element={<AdminAuditPage />} />
+        <Route path="profile" element={<ProfilePage />} />
+      </Route>
+
       <Route path="*" element={<RootRedirect />} />
     </Routes>
   );
@@ -109,5 +147,6 @@ function RootRedirect() {
   const { user, loading } = useAuth();
   if (loading) return <PageSpinner />;
   if (!user) return <Navigate to="/login" replace />;
+  if (user.isAdmin) return <Navigate to="/admin" replace />;
   return <Navigate to={user.accountType === "BROKER" ? "/broker" : "/app"} replace />;
 }
