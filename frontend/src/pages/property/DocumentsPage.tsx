@@ -5,6 +5,7 @@ import { documentsApi } from "../../api/client";
 import { EmptyState } from "../../components/ui/EmptyState";
 import { ErrorText } from "../../components/ui/ErrorText";
 import { formatDateShort } from "../../lib/format";
+import { fileUrl } from "../../lib/fileUrl";
 import { useLanguage } from "../../context/LanguageContext";
 import type { Document, DocumentCategory } from "../../types";
 
@@ -85,7 +86,7 @@ export default function DocumentsPage() {
                 <FileText className="h-5 w-5" />
               </div>
               <div className="min-w-0 flex-1">
-                <a href={d.fileUrl} target="_blank" rel="noreferrer" className="block truncate text-sm font-medium text-ink-800 hover:text-brass-600">
+                <a href={fileUrl(d.fileUrl)} target="_blank" rel="noreferrer" className="block truncate text-sm font-medium text-ink-800 hover:text-brass-600">
                   {d.fileName}
                 </a>
                 <p className="text-xs text-ink-400">

@@ -9,6 +9,7 @@ import { Stat } from "../../components/ui/Stat";
 import { EmptyState } from "../../components/ui/EmptyState";
 import { verificationStatus, confirmationStatus } from "../../lib/status";
 import { formatDateShort, formatMoney, monthLabel } from "../../lib/format";
+import { fileUrl } from "../../lib/fileUrl";
 import { useLanguage } from "../../context/LanguageContext";
 import type { PropertyContext } from "../../components/layout/PropertyLayout";
 import type { Transaction } from "../../types";
@@ -625,7 +626,7 @@ function TransactionDetailModal({
             {transaction.evidence.map((e) => (
               <li key={e.id}>
                 <a
-                  href={e.document.fileUrl}
+                  href={fileUrl(e.document.fileUrl)}
                   target="_blank"
                   rel="noreferrer"
                   className="flex items-center gap-2 rounded-md border border-ink-100 px-3 py-2 text-sm text-ink-600 hover:bg-parchment-50"

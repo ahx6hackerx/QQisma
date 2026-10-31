@@ -2,6 +2,7 @@ import { ReactNode, useEffect, useState } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { Bell, LogOut, Sun, Moon, Languages, Menu, X, PanelLeftClose, PanelLeftOpen, PanelRightClose, PanelRightOpen, Wallet, UserCircle, ShieldAlert } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
+import { fileUrl } from "../../lib/fileUrl";
 import { useTheme } from "../../context/ThemeContext";
 import { useLanguage } from "../../context/LanguageContext";
 import { useCurrency } from "../../context/CurrencyContext";
@@ -140,7 +141,7 @@ function SidebarContent({
         <div className={`flex items-center gap-2 px-2 ${collapsed ? "justify-center" : ""}`}>
           <NavLink to={profilePath} onClick={onNavigate} className="shrink-0">
             {user?.avatarUrl ? (
-              <img src={user.avatarUrl} alt="" className="h-9 w-9 rounded-full object-cover" />
+              <img src={fileUrl(user.avatarUrl)} alt="" className="h-9 w-9 rounded-full object-cover" />
             ) : (
               <div className="flex h-9 w-9 items-center justify-center rounded-full bg-brass-500 font-display text-sm font-bold text-ink-900">
                 {user?.fullName?.charAt(0)}

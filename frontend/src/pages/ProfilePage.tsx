@@ -5,6 +5,7 @@ import { useLanguage } from "../context/LanguageContext";
 import { authApi } from "../api/client";
 import { ErrorText } from "../components/ui/ErrorText";
 import { Spinner } from "../components/ui/Spinner";
+import { fileUrl } from "../lib/fileUrl";
 
 export default function ProfilePage() {
   const { user, setUser } = useAuth();
@@ -12,7 +13,7 @@ export default function ProfilePage() {
   const [fullName, setFullName] = useState(user?.fullName ?? "");
   const [phone, setPhone] = useState(user?.phone ?? "");
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
-  const [avatarPreview, setAvatarPreview] = useState<string | null>(user?.avatarUrl ?? null);
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(user?.avatarUrl ? fileUrl(user.avatarUrl) : null);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
